@@ -42,7 +42,7 @@ var pulso = 0; // Variável para o efeito de pulsação/flutuação
 // --- VARIÁVEIS DE JOGO E FÍSICA (NOVAS) ---
 var imgPudim;
 const URL_IMAGEM_PUDIM =
-  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/image.png";
+  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/image.png";
 
 var pudimX; // Posição X do pudim no jogo
 var pudimY; // Posição Y do pudim no jogo
@@ -53,7 +53,14 @@ var alturaChao = 270; // Posição Y da plataforma do jogo
 var larguraImg = 150; // Novo tamanho da imagem
 var alturaImg = 120; // Novo tamanho da imagem
 // ------------------------------------------
+// ... (após as variáveis de cor) ...
 
+// --- VARIÁVEIS DE FONTE (NOVAS) ---
+let fontePixel;
+// 🛑 ATENÇÃO: SUBSTITUA PELA URL RAW DA SUA FONTE NO GITHUB
+const URL_FONTE_PIXEL = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/BubaDEMO-Outline.otf";
+// ------------------------------------
+// ...
 function preload() {
   // Carrega a imagem do URL
   imgPudim = loadImage(
@@ -66,6 +73,13 @@ function preload() {
       // Opcional: carregar uma imagem local de fallback se a remota falhar.
     }
   );
+
+  fontePixel = loadFont(
+      URL_FONTE_PIXEL,
+      () => { console.log("Fonte Pixel carregada com sucesso!"); },
+      (e) => { console.error("Falha ao carregar fonte:", e); }
+  );
+
 }
 
 function setup() {
@@ -215,6 +229,11 @@ function draw() {
     fill(corContornoTitulo);
     desenharPlataforma(290);
     desenharPudimMenu();
+
+    if (fontePixel) {
+        textFont(fontePixel);
+    }
+
     textSize(50);
     textAlign(CENTER, TOP);
     var deslocamentoContorno = 2;
@@ -231,6 +250,10 @@ function draw() {
     textSize(25);
     fill(corTextoBotao);
     text("Jump flippy pudding", width / 2, 110);
+
+    if (fontePixel) {
+        textFont('sans-serif'); 
+    }
 
     var xBotaoJogar = xInicialBotao;
     var xBotaoInstrucoes = xInicialBotao + larguraBotao + espacamento;
