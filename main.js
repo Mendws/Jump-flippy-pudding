@@ -26,10 +26,9 @@ var corContornoTitulo = "#FFFFFF"; // Branco para o contorno do título
 var corDestaque = "#FF0044"; // Vermelho Vivo (Hover/Cereja/Bloquinhos)
 var corPudim = "#F8BBD0"; // Rosa mais claro para o corpo do pudim
 
-// NOVAS CORES PARA SOMBRA E BRILHO DO PUDIM
+// NOVAS CORES PARA SOMBRA E BRILHO DO PUDIM (Mantidas para consistência)
 var corSombraPudim = "#D89BAF"; // Rosa escuro para a sombra
 var corBrilhoPudim = "#FFFFFF"; // Branco para o reflexo
-// Fim das NOVAS CORES
 
 var espessuraBorda = 4; // Espessura da borda Pixel Art
 
@@ -39,6 +38,35 @@ var pudimAltura = 80;
 var pudimXMenu;
 var pudimYMenuBase = 240; // Posição Y base para que ele fique acima da plataforma
 var pulso = 0; // Variável para o efeito de pulsação/flutuação
+
+// --- VARIÁVEIS DE JOGO E FÍSICA (NOVAS) ---
+var imgPudim;
+const URL_IMAGEM_PUDIM =
+  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/image.png";
+
+var pudimX; // Posição X do pudim no jogo
+var pudimY; // Posição Y do pudim no jogo
+var velocidadeY; // Velocidade vertical (para pulo e queda)
+var gravidade = 0.6; // Força da gravidade
+var forcaPulo = -10; // Força aplicada ao pular (negativo para subir)
+var alturaChao = 270; // Posição Y da plataforma do jogo
+var larguraImg = 150; // Novo tamanho da imagem
+var alturaImg = 120; // Novo tamanho da imagem
+// ------------------------------------------
+
+function preload() {
+  // Carrega a imagem do URL
+  imgPudim = loadImage(
+    URL_IMAGEM_PUDIM,
+    () => {
+      console.log("Imagem do Pudim carregada com sucesso!");
+    },
+    (e) => {
+      console.error("Falha ao carregar imagem:", e);
+      // Opcional: carregar uma imagem local de fallback se a remota falhar.
+    }
+  );
+}
 
 function setup() {
   createCanvas(800, 500);
@@ -58,104 +86,33 @@ function desenharPlataforma(yPos) {
   let yBloco = yPos - 10;
   let blocoTam = 10;
   fill(corDestaque);
-  rect(pudimXMenu - 150, yBloco, blocoTam, blocoTam);
   rect(pudimXMenu - 135, yBloco, blocoTam, blocoTam);
-  rect(pudimXMenu - 120, yBloco, blocoTam, blocoTam);
-  rect(pudimXMenu + 60, yBloco, blocoTam, blocoTam);
-  rect(pudimXMenu + 75, yBloco, blocoTam, blocoTam);
+  rect(pudimXMenu - 115, yBloco, blocoTam, blocoTam);
+  rect(pudimXMenu - 95, yBloco, blocoTam, blocoTam);
+  rect(pudimXMenu + 95, yBloco, blocoTam, blocoTam);
+  rect(pudimXMenu + 115, yBloco, blocoTam, blocoTam);
+  rect(pudimXMenu + 135, yBloco, blocoTam, blocoTam);
 }
 
 function desenharPudimMenu() {
+  // 1. Efeito Flutuação
   let deslocamentoY = sin(frameCount * 0.06) * 6;
   let x = pudimXMenu;
   let y = pudimYMenuBase + deslocamentoY;
 
-  fill(corBordaBotao);
-  rect(
-    x - pudimLargura / 2 - 2,
-    y - pudimAltura / 2 - 2,
-    pudimLargura + 4,
-    pudimAltura + 4,
-    10
-  );
-
-  fill(corPudim);
-  rect(
-    x - pudimLargura / 2,
-    y - pudimAltura / 2,
-    pudimLargura,
-    pudimAltura,
-    10
-  );
-
-  fill(corSombraPudim);
-  rect(
-    x - pudimLargura / 2 + 5,
-    y + pudimAltura / 2 - 15,
-    pudimLargura - 10,
-    15,
-    0,
-    0,
-    8,
-    8
-  );
-  rect(
-    x + pudimLargura / 2 - 5,
-    y - pudimAltura / 2 + 5,
-    5,
-    pudimAltura - 10,
-    0,
-    8,
-    0,
-    0
-  );
-
-  fill(corContornoTitulo);
-  let asaLargura = 20;
-  let asaAltura = 15;
-  triangle(
-    x - pudimLargura / 2 - asaLargura,
-    y,
-    x - pudimLargura / 2,
-    y - asaAltura,
-    x - pudimLargura / 2,
-    y + asaAltura
-  );
-  triangle(
-    x + pudimLargura / 2 + asaLargura,
-    y,
-    x + pudimLargura / 2,
-    y - asaAltura,
-    x + pudimLargura / 2,
-    y + asaAltura
-  );
-
-  fill(corPudim);
-  rect(
-    x - pudimLargura / 2 + 5,
-    y - pudimAltura / 2 - 5,
-    pudimLargura - 10,
-    10,
-    5
-  );
-
-  fill(corBrilhoPudim);
-  rect(x - pudimLargura / 2 + 10, y - pudimAltura / 2 - 5, 20, 5, 2);
-
-  let feicaoTam = 5;
-  fill(corBordaBotao);
-
-  rect(x - 20, y, feicaoTam, feicaoTam);
-  rect(x + 15, y, feicaoTam, feicaoTam);
-  fill("#FFC0CB");
-  rect(x - 30, y + 5, feicaoTam, feicaoTam);
-  rect(x + 25, y + 5, feicaoTam, feicaoTam);
-  fill(corBordaBotao);
-  rect(x - 5, y + 10, feicaoTam * 2, feicaoTam / 2);
-  fill(corDestaque);
-  circle(x + 5, y - pudimAltura / 2 - 10, 15);
-  fill(corTextoBotao);
-  rect(x + 5, y - pudimAltura / 2 - 20, 2, 10);
+  // *** DESENHA A IMAGEM ***
+  if (imgPudim) {
+    imageMode(CENTER);
+    image(imgPudim, x, y, larguraImg, alturaImg);
+    imageMode(CORNER);
+  } else {
+    // Fallback: Desenha um círculo simples se a imagem não carregar
+    fill(corPudim);
+    ellipse(x, y, pudimLargura, pudimAltura);
+    fill(corDestaque);
+    textAlign(CENTER, CENTER);
+    text("Carregando Imagem...", x, y);
+  }
 }
 
 function desenharBotao(texto, xPos, yPos) {
@@ -200,10 +157,14 @@ function desenharTelaInstrucoes() {
   textSize(20);
   textAlign(LEFT, TOP);
   fill(corTextoBotao);
-  text("1. Pressione espaço para fazer o Pudim Saltar", 100, 150);
-  text("2. Aperte a tecla A ou D para controlar a direção do pudim,ou seja,\nesquerda ou direita", 100, 200);
-  text("3. Evite os obstáculos de cereja e cair das plataformas ", 100, 260);
-  text("4. Tente bater seu recorde!", 100, 300);
+  text("1. Pressione espaço para fazer o Pudim Saltar", 100, 155);
+  text(
+    "2. Aperte a tecla A ou D para controlar a direção do pudim,ou seja,\nesquerda ou direita",
+    100,
+    190
+  );
+  text("3. Evite os obstáculos de cereja e cair das plataformas ", 100, 255);
+  text("4. Tente bater seu recorde!", 100, 295);
 
   // Botão Voltar
   desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
@@ -220,7 +181,11 @@ function desenharTelaCreditos() {
   textAlign(CENTER, TOP);
   fill(corTextoBotao);
   text("Design & Código: Raquel B. Mendes", width / 2, 150);
-  text("Orientadores: Rummenigge Rudson Dantas e Orivaldo Vieira de Santana Junior", width / 2, 190);
+  text(
+    "Orientadores: Rummenigge Rudson Dantas e Orivaldo Vieira de Santana Junior",
+    width / 2,
+    190
+  );
   text("Feito com p5.js", width / 2, 230);
 
   // Botão Voltar
@@ -236,9 +201,7 @@ function desenharTelaJogo() {
   // Aqui você adicionará a física e os obstáculos reais do jogo.
 
   desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
-
 }
-
 
 // --- FUNÇÃO PRINCIPAL: DRAW (Game Loop) ---
 
@@ -250,9 +213,7 @@ function draw() {
     // TELA 1: MENU PRINCIPAL
     background(corFundoCeu);
     fill(corContornoTitulo);
-    ellipse(width * 0.2, 180, 100, 60);
-    ellipse(width * 0.8, 150, 120, 70);
-    desenharPlataforma(270);
+    desenharPlataforma(290);
     desenharPudimMenu();
     textSize(50);
     textAlign(CENTER, TOP);
@@ -295,8 +256,8 @@ function draw() {
 // --- Ação de Clique (Mouse Pressed) ---
 
 function mousePressed() {
-  // Lógica para voltar do menu secundário para o principal (Telas 3 e 4)
-  if (tela === 2|| tela === 3 || tela === 4) {
+  // Lógica para voltar do menu secundário para o principal (Telas 2, 3 e 4)
+  if (tela === 2 || tela === 3 || tela === 4) {
     // Posição do botão VOLTAR (que é centralizado)
     let xVoltar = width / 2 - larguraBotao / 2;
     let yVoltar = height - 80;
