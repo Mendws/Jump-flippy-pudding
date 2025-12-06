@@ -42,7 +42,7 @@ var pulso = 0; // Variável para o efeito de pulsação/flutuação
 // --- VARIÁVEIS DE JOGO E FÍSICA (NOVAS) ---
 var imgPudim;
 const URL_IMAGEM_PUDIM =
-  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/image.png";
+  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Pudim.png";
 
 var pudimX; // Posição X do pudim no jogo
 var pudimY; // Posição Y do pudim no jogo
@@ -53,14 +53,17 @@ var alturaChao = 270; // Posição Y da plataforma do jogo
 var larguraImg = 150; // Novo tamanho da imagem
 var alturaImg = 120; // Novo tamanho da imagem
 // ------------------------------------------
-// ... (após as variáveis de cor) ...
 
-// --- VARIÁVEIS DE FONTE (NOVAS) ---
-let fontePixel;
+// --- VARIÁVEIS DE FONTE ---
+let fonteTitulo; // Renomeado de fontePixel
 // 🛑 ATENÇÃO: SUBSTITUA PELA URL RAW DA SUA FONTE NO GITHUB
-const URL_FONTE_PIXEL = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/BubaDEMO-Outline.otf";
+const URL_FONTE_PIXEL = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte star.otf";
+
+let fonteSubTitulo;
+
+const URL_FONTE_TEXT = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte subtitulo.otf";
 // ------------------------------------
-// ...
+
 function preload() {
   // Carrega a imagem do URL
   imgPudim = loadImage(
@@ -74,12 +77,20 @@ function preload() {
     }
   );
 
-  fontePixel = loadFont(
+  // Carrega a fonte customizada para o título
+  fonteTitulo = loadFont(
       URL_FONTE_PIXEL,
-      () => { console.log("Fonte Pixel carregada com sucesso!"); },
-      (e) => { console.error("Falha ao carregar fonte:", e); }
+      () => { console.log("Fonte do Título (Buba) carregada com sucesso!"); },
+      (e) => { console.error("Falha ao carregar fonte do Título:", e); }
   );
-
+  
+  fonteSubTitulo = loadFont(
+      URL_FONTE_TEXT,
+      () => { console.log("Fonte do Título (Buba) carregada com sucesso!"); },
+      (e) => { console.error("Falha ao carregar fonte do Título:", e); }
+  );
+  
+  // A fonte fonteSubTitulo é carregada via link HTML/CSS, não precisa de loadFont.
 }
 
 function setup() {
@@ -152,10 +163,14 @@ function desenharBotao(texto, xPos, yPos) {
   );
   fill(corFundoBotao);
   rect(x, y, larguraBotao, alturaBotao, 8);
+  
+  // 🛑 USANDO PRESS START 2P para os botões
+  textFont(fonteSubTitulo); 
+  textSize(10); // Tamanho reduzido para pixel art
   fill(corTextoBotao);
-  textSize(18);
   textAlign(CENTER, CENTER);
-  text(texto, x + larguraBotao / 2, y + alturaBotao / 2);
+  text(texto, x + larguraBotao / 2, y + alturaBotao / 2 + 2); // Ajuste vertical
+  
   return isHovering;
 }
 
@@ -164,34 +179,52 @@ function desenharBotao(texto, xPos, yPos) {
 function desenharTelaInstrucoes() {
   background(corFundoCeu);
   fill(corTituloPrincipal);
+  
+  // Título: Usa a fonte customizada (Buba)
+  if (fonteTitulo) {
+    textFont(fonteTitulo);
+  } else {
+    textFont('sans-serif');
+  }
   textSize(40);
   textAlign(CENTER, TOP);
-  text("INSTRUÇÕES", width / 2, 50);
+  text("INSTRUCOES", width / 2, 50);
 
-  textSize(20);
+  // Corpo do Texto: Usa Press Start 2P
+  textFont(fonteSubTitulo); 
+  textSize(12);
   textAlign(LEFT, TOP);
   fill(corTextoBotao);
   text("1. Pressione espaço para fazer o Pudim Saltar", 100, 155);
   text(
-    "2. Aperte a tecla A ou D para controlar a direção do pudim,ou seja,\nesquerda ou direita",
+    "2. Aperte a tecla A ou D para controlar a direção do pudim,ou seja,\n         esquerda ou direita", // Ajuste para quebra de linha
     100,
     190
   );
   text("3. Evite os obstáculos de cereja e cair das plataformas ", 100, 255);
   text("4. Tente bater seu recorde!", 100, 295);
 
-  // Botão Voltar
+  // Botão Voltar (usa desenharBotao, que aplica Press Start 2P)
   desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
 }
 
 function desenharTelaCreditos() {
   background(corFundoCeu);
   fill(corTituloPrincipal);
+  
+  // Título: Usa a fonte customizada (Buba)
+  if (fonteTitulo) {
+    textFont(fonteTitulo);
+  } else {
+    textFont('sans-serif');
+  }
   textSize(40);
   textAlign(CENTER, TOP);
-  text("CRÉDITOS", width / 2, 50);
+  text("CREDITOS", width / 2, 50);
 
-  textSize(20);
+  // Corpo do Texto: Usa Press Start 2P
+  textFont(fonteSubTitulo); 
+  textSize(12);
   textAlign(CENTER, TOP);
   fill(corTextoBotao);
   text("Design & Código: Raquel B. Mendes", width / 2, 150);
@@ -202,17 +235,19 @@ function desenharTelaCreditos() {
   );
   text("Feito com p5.js", width / 2, 230);
 
-  // Botão Voltar
+  // Botão Voltar (usa desenharBotao, que aplica Press Start 2P)
   desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
 }
 
 function desenharTelaJogo() {
   background(corFundoCeu);
   fill(corTextoBotao);
-  textSize(50);
+  
+  // Texto do Jogo: Usa Press Start 2P
+  textFont(fonteSubTitulo); 
+  textSize(20);
   textAlign(CENTER, CENTER);
   text("JOGO EM ANDAMENTO!", width / 2, height / 2);
-  // Aqui você adicionará a física e os obstáculos reais do jogo.
 
   desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
 }
@@ -223,15 +258,17 @@ function draw() {
   noStroke();
 
   if (tela === 1) {
-    // 🛑 Correção: Usar '===' para comparação.
     // TELA 1: MENU PRINCIPAL
     background(corFundoCeu);
     fill(corContornoTitulo);
     desenharPlataforma(290);
     desenharPudimMenu();
 
-    if (fontePixel) {
-        textFont(fontePixel);
+    // --- TÍTULO PRINCIPAL ---
+    if (fonteTitulo) { // Usa a fonte customizada Buba
+        textFont(fonteTitulo);
+    } else {
+        textFont('sans-serif'); // Fallback
     }
 
     textSize(50);
@@ -247,23 +284,25 @@ function draw() {
     fill(corTituloPrincipal);
     text("Pudim Saltitante", width / 2, 50);
 
-    textSize(25);
+    // --- SUBTÍTULO ---
+    // 🛑 USANDO PRESS START 2P para o subtítulo
+    textFont(fonteSubTitulo); 
+    textSize(16); // Tamanho ajustado
     fill(corTextoBotao);
     text("Jump flippy pudding", width / 2, 110);
-
-    if (fontePixel) {
-        textFont('sans-serif'); 
-    }
-
+    
+    // Desenha Botões (que usam Press Start 2P)
     var xBotaoJogar = xInicialBotao;
     var xBotaoInstrucoes = xInicialBotao + larguraBotao + espacamento;
     var xBotaoCreditos = xInicialBotao + 2 * larguraBotao + 2 * espacamento;
     desenharBotao("JOGAR", xBotaoJogar, yBotao);
     desenharBotao("INSTRUÇÕES", xBotaoInstrucoes, yBotao);
     desenharBotao("CRÉDITOS", xBotaoCreditos, yBotao);
+    
     textSize(14);
     fill(corTextoBotao);
     textAlign(CENTER, BOTTOM);
+    
   } else if (tela === 2) {
     // TELA 2: JOGO (Game Loop real)
     desenharTelaJogo();
