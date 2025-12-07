@@ -91,7 +91,7 @@ const URL_IMAGEM_PLATAFORMA =
 
 // --- Fontes ---
 let fonteTitulo; // Fonte principal para o título
-const URL_FONTE_TITULO = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte star.otf"; // Fonte do Título
+const URL_FONTE_TITULO = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte star.ttf"; // Fonte do Título
 
 let fonteSubTitulo; // Fonte para subtítulo e botões
 const URL_FONTE_TEXT = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte subtitulo.otf"; // Fonte do Subtítulo/Botões
