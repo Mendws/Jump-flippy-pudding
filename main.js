@@ -266,7 +266,7 @@ function desenharTelaInstrucoes() {
   }
   textSize(40);
   textAlign(CENTER, TOP);
-  text("INSTRUCOES", width / 2, 50);
+  text("INSTRUÇÕES", width / 2, 50);
 
   // Corpo do Texto: Usa fonteSubTitulo
   if (fonteSubTitulo) {
@@ -305,7 +305,7 @@ function desenharTelaCreditos() {
   }
   textSize(40);
   textAlign(CENTER, TOP);
-  text("CREDITOS", width / 2, 50);
+  text("CRÉDITOS", width / 2, 50);
 
   // Corpo do Texto: Usa fonteSubTitulo
   if (fonteSubTitulo) {
