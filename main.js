@@ -40,8 +40,8 @@ var pudimYMenuBase = 280;
 var pulso = 0;
 
 // --- Variáveis de Jogo e Física ---
-const ALTURA_TOPO_PLATAFORMA = -40; // Ajuste para o alinhamento visual da plataforma
-const OFFSET_Y_AJUSTE = 40; // Deslocamento da física para o visual (340 - 300)
+const ALTURA_TOPO_PLATAFORMA = -80; // Ajuste para o alinhamento visual da plataforma
+const OFFSET_Y_AJUSTE = 80; // Deslocamento da física para o visual (340 - 300)
 
 var pudimX;
 var pudimY;
