@@ -7,7 +7,8 @@ var larguraBotao = 120;
 var alturaBotao = 40;
 var espacamento = 20;
 
-var tela = 1; // 1=Menu, 2=Jogo, 3=Instruções, 4=Créditos
+// Variável de controle de tela: 1=Menu, 2=Jogo, 3=Instruções, 4=Créditos, 5=GameOver
+var tela = 1; 
 var largura = 200;
 var altura = 50;
 var xMenu = 50;
@@ -40,22 +41,22 @@ var pudimYMenuBase = 280;
 var pulso = 0;
 
 // --- Variáveis de Jogo e Física ---
-const ALTURA_TOPO_PLATAFORMA = -70; // Ajuste para o alinhamento visual da plataforma
-const OFFSET_Y_AJUSTE = 70; // Deslocamento da física para o visual (340 - 300)
+const ALTURA_TOPO_PLATAFORMA = -80;
+const OFFSET_Y_AJUSTE = 80;
 
 var pudimX;
 var pudimY;
 var velocidadeY;
 var gravidade = 0.6;
 var forcaPulo = -10;
-var alturaChao = 300; // Y do "piso" base para cálculo da física
+var alturaChao = 300;
 
 var larguraImg = 150;
 var alturaImg = 120;
 
-// Hitbox do Pudim
-var larguraHitboxPudim = 95;
-var alturaHitboxPudim = 75;
+// HITBOX CIRCULAR: Raio do Pudim e Cereja
+var raioHitboxPudim = 40; // Raio para colisão do Pudim
+var raioHitboxCereja = 18; // Raio para colisão da Cereja
 
 var velocidadeHorizontal = 6;
 
@@ -64,83 +65,63 @@ var obstaculos = [];
 var larguraObs = 50;
 var alturaObs = 50;
 
-// Hitbox da Cereja
-var larguraHitbox = 35;
-var alturaHitbox = 40;
+// --- Variáveis para as Imagens dos Botões ---
+var imgBotaoJogar;
+var imgBotaoInstrucoes;
+var imgBotaoCreditos;
+var imgBotaoVoltar; 
 
 // ====================================================================
 // === 2. IMPORTS (Imagens e Fontes) ===
 // ====================================================================
 
-// --- Imagens ---
-var fundo;
+// --- URLs das Imagens ---
 const URL_IMAGEM_FUNDO =
   "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fundoceu.png";
-
-var imgPudim;
 const URL_IMAGEM_PUDIM =
   "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Pudim.png";
-
-var imgCereja;
 const URL_IMAGEM_CEREJA =
   "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Cereja.png";
-
-var imgPlataforma;
 const URL_IMAGEM_PLATAFORMA =
   "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Plataforma_1.png";
+const URL_BTN_JOGAR = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Botaojogar.png";
+const URL_BTN_INSTRUCOES =
+  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Botaoinstrucao.png";
+const URL_BTN_CREDITOS = 
+  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Botaocredito.png";
+const URL_BTN_VOLTAR = 
+  "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Botaovoltar.png";
 
-// --- Fontes ---
-let fonteTitulo; // Fonte principal para o título
-const URL_FONTE_TITULO = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte star.ttf"; // Fonte do Título
+// --- URLs das Fontes ---
+const URL_FONTE_TITULO = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte star.ttf"; 
+const URL_FONTE_TEXT = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte subtitulo.otf"; 
 
-let fonteSubTitulo; // Fonte para subtítulo e botões
-const URL_FONTE_TEXT = "https://raw.githubusercontent.com/Mendws/Jump-flippy-pudding/main/assets/Fonte subtitulo.otf"; // Fonte do Subtítulo/Botões
+var fundo;
+var imgPudim;
+var imgCereja;
+var imgPlataforma;
+let fonteTitulo; 
+let fonteSubTitulo; 
 
 /**
- * Carrega todos os assets antes de iniciar o setup.
+ * Carrega todos os assets (imagens e fontes) antes de iniciar o setup.
  */
 function preload() {
-  // Carrega a imagem de fundo
-  fundo = loadImage(
-    URL_IMAGEM_FUNDO,
-    () => { console.log("Imagem de fundo carregada com sucesso!"); },
-    (e) => { console.error("Falha ao carregar imagem de fundo:", e); }
-  );
-
-  // Carrega a imagem do Pudim
-  imgPudim = loadImage(
-    URL_IMAGEM_PUDIM,
-    () => { console.log("Imagem do Pudim carregada com sucesso!"); },
-    (e) => { console.error("Falha ao carregar imagem Pudim:", e); }
-  );
-
-  // Carrega a imagem da Cereja
-  imgCereja = loadImage(
-    URL_IMAGEM_CEREJA,
-    () => { console.log("Imagem da Cereja carregada com sucesso!"); },
-    (e) => { console.error("Falha ao carregar imagem Cereja:", e); }
-  );
-
-  // Carrega a imagem da Plataforma
-  imgPlataforma = loadImage(
-    URL_IMAGEM_PLATAFORMA,
-    () => { console.log("Imagem da Plataforma carregada com sucesso!"); },
-    (e) => { console.error("Falha ao carregar imagem Plataforma:", e); }
-  );
-
-  // Carrega a fonte customizada para o título
-  fonteTitulo = loadFont(
-      URL_FONTE_TITULO, 
-      () => { console.log("Fonte do Título (Buba) carregada com sucesso!"); }, 
-      (e) => { console.error("Falha ao carregar fonte do Título:", e); }
-  );
+  // Carrega Imagens
+  fundo = loadImage(URL_IMAGEM_FUNDO);
+  imgPudim = loadImage(URL_IMAGEM_PUDIM);
+  imgCereja = loadImage(URL_IMAGEM_CEREJA);
+  imgPlataforma = loadImage(URL_IMAGEM_PLATAFORMA);
   
-  // Carrega a fonte customizada para o subtítulo/botões
-  fonteSubTitulo = loadFont(
-      URL_FONTE_TEXT, 
-      () => { console.log("Fonte do Subtítulo/Botões carregada com sucesso!"); }, 
-      (e) => { console.error("Falha ao carregar fonte do Subtítulo:", e); }
-  );
+  // Carrega Botões
+  imgBotaoJogar = loadImage(URL_BTN_JOGAR);
+  imgBotaoInstrucoes = loadImage(URL_BTN_INSTRUCOES);
+  imgBotaoCreditos = loadImage(URL_BTN_CREDITOS);
+  imgBotaoVoltar = loadImage(URL_BTN_VOLTAR);
+
+  // Carrega Fontes
+  fonteTitulo = loadFont(URL_FONTE_TITULO);
+  fonteSubTitulo = loadFont(URL_FONTE_TEXT);
 }
 
 // ====================================================================
@@ -148,31 +129,48 @@ function preload() {
 // ====================================================================
 
 /**
- * Função Construtora para os Obstáculos (Cerejas)
+ * Função Construtora para os Obstáculos (Cerejas).
+ * @param {number} x - Posição X (Centro).
+ * @param {number} y - Posição Y (Centro).
  */
 function Obstaculo(x, y, w, h) {
-  this.x = x; // Centro X
-  this.y = y; // Centro Y
+  this.x = x; 
+  this.y = y; 
   this.w = w;
   this.h = h;
 }
 
 /**
+ * Lógica de Colisão do Pudim com Obstáculos (Cerejas)
+ * Usa a Colisão Circular: verifica se a distância entre os centros é menor que a soma dos raios.
+ */
+function verificarColisaoObstaculo() {
+  for (let obs of obstaculos) {
+    // Calcula a distância entre os centros dos objetos
+    let distanciaCentros = dist(pudimX, pudimY, obs.x, obs.y);
+
+    // Colisão ocorre se a distância for menor que a soma dos raios
+    if (distanciaCentros < raioHitboxPudim + raioHitboxCereja) {
+       tela = 5; // Mudar para tela Game Over
+       return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Função de desenho da Plataforma/Chão.
+ * @param {number} yPos - Posição Y onde o chão começa.
  */
 function desenharPlataforma(yPos) {
   noStroke();
-
   let alturaDoTopo = ALTURA_TOPO_PLATAFORMA;
-
-  // Desenha a Plataforma usando a imagem esticada para baixo
   if (imgPlataforma) {
     imageMode(CORNER);
     let yInicioImagem = yPos - alturaDoTopo;
     let alturaImagemTotal = height - yInicioImagem;
     image(imgPlataforma, 0, yInicioImagem, width, alturaImagemTotal);
   } else {
-    // Fallback: Desenha o fundo sólido
     fill("#9C6644");
     rect(0, yPos, width, height - yPos);
     fill(corDestaque);
@@ -184,18 +182,15 @@ function desenharPlataforma(yPos) {
  * Desenha o Pudim na tela de Menu com efeito de flutuação.
  */
 function desenharPudimMenu() {
-  // Efeito Flutuação
   let deslocamentoY = sin(frameCount * 0.06) * 6;
   let x = pudimXMenu;
-  let y = pudimYMenuBase + deslocamentoY; 
+  let y = pudimYMenuBase + deslocamentoY;  
 
-  // Desenha a imagem do Pudim
   if (imgPudim) {
     imageMode(CENTER);
     image(imgPudim, x, y, larguraImg, alturaImg);
     imageMode(CORNER);
   } else {
-    // Desenho de fallback
     fill(corPudim);
     ellipse(x, y, pudimLargura, pudimAltura);
     fill(corDestaque);
@@ -205,46 +200,71 @@ function desenharPudimMenu() {
 }
 
 /**
- * Desenha um botão clicável com o texto fornecido.
+ * Desenha um botão clicável com o texto fornecido, usando uma imagem de fundo (se fornecida).
+ * @param {string} texto - Texto exibido no botão.
  */
-function desenharBotao(texto, xPos, yPos) {
+function desenharBotao(texto, xPos, yPos, imagemBotao) {
   var x = xPos;
   var y = yPos;
+  var w = larguraBotao;
+  var h = alturaBotao;
+  
   var isHovering =
     mouseX >= x &&
-    mouseX <= x + larguraBotao &&
+    mouseX <= x + w &&
     mouseY >= y &&
-    mouseY <= y + alturaBotao;
+    mouseY <= y + h;
 
-  // Contorno
-  if (isHovering) {
-    fill(corDestaque);
+  // Desenho do Corpo do botão
+  if (imagemBotao) {
+      imageMode(CORNER);
+      if (isHovering) {
+          tint(242, 211, 223); // Efeito de brilho/destaque no hover
+      } else {
+          noTint();
+      }
+      image(imagemBotao, x, y, w, h);
+      noTint();
   } else {
-    fill(corBordaBotao);
+      // Fallback: Desenho geométrico
+      var bordaRaio = 8;
+      if (isHovering) {
+          fill(corDestaque);
+      } else {
+          fill(corBordaBotao);
+      }
+      rect(x - espessuraBorda, y - espessuraBorda, w + espessuraBorda * 2, h + espessuraBorda * 2, bordaRaio);
+      fill(corFundoBotao);
+      rect(x, y, w, h, bordaRaio);
   }
-  rect(
-    x - espessuraBorda,
-    y - espessuraBorda,
-    larguraBotao + espessuraBorda * 2,
-    alturaBotao + espessuraBorda * 2,
-    8
-  );
-  // Fundo
-  fill(corFundoBotao);
-  rect(x, y, larguraBotao, alturaBotao, 8);
   
-  // Texto (usa fonteSubTitulo)
-  if (fonteSubTitulo) {
-    textFont(fonteSubTitulo); 
-  } else {
-    textFont('sans-serif');
-  }
-  textSize(10); // Tamanho reduzido para pixel art
+  // Desenho do Texto
+  if (fonteSubTitulo) { textFont(fonteSubTitulo); } else { textFont('sans-serif'); }
+  textSize(12);
   fill(corTextoBotao);
   textAlign(CENTER, CENTER);
-  text(texto, x + larguraBotao / 2, y + alturaBotao / 2 + 2); // Ajuste vertical
+  text(texto, x + w / 2, y + h / 2 - 1); 
   
   return isHovering;
+}
+
+/**
+ * Reseta as variáveis de posição do Pudim e dos Obstáculos para um novo jogo.
+ */
+function reiniciarJogo() {
+    // Posição Y inicial ajustada pelo raio (centro do pudim na altura do chão)
+    const PUDIM_Y_INICIAL = alturaChao + OFFSET_Y_AJUSTE - raioHitboxPudim;
+    
+    pudimX = 50;
+    pudimY = PUDIM_Y_INICIAL;
+    velocidadeY = 0;
+    
+    // Resetar obstáculos
+    obstaculos = [];
+    let yObsCentro = alturaChao + OFFSET_Y_AJUSTE - alturaObs / 2;
+    let centroX = width / 2;
+    obstaculos.push(new Obstaculo(centroX - 160, yObsCentro, larguraObs, alturaObs));
+    obstaculos.push(new Obstaculo(centroX + 160, yObsCentro, larguraObs, alturaObs));
 }
 
 // ====================================================================
@@ -252,28 +272,16 @@ function desenharBotao(texto, xPos, yPos) {
 // ====================================================================
 
 /**
- * Desenha a Tela de Instruções.
+ * Desenha a tela de Instruções do jogo.
  */
 function desenharTelaInstrucoes() {
-  background(fundo); // ALTERADO: Usa a imagem de fundo 'fundo'
+  background(fundo);
   fill(corTituloPrincipal);
-  
-  // Título: Usa fonteTitulo
-  if (fonteTitulo) {
-    textFont(fonteTitulo);
-  } else {
-    textFont('sans-serif');
-  }
+  if (fonteTitulo) { textFont(fonteTitulo); } else { textFont('sans-serif'); }
   textSize(40);
   textAlign(CENTER, TOP);
   text("INSTRUÇÕES", width / 2, 50);
-
-  // Corpo do Texto: Usa fonteSubTitulo
-  if (fonteSubTitulo) {
-    textFont(fonteSubTitulo); 
-  } else {
-    textFont('sans-serif');
-  }
+  if (fonteSubTitulo) { textFont(fonteSubTitulo); } else { textFont('sans-serif'); }
   textSize(12);
   textAlign(LEFT, TOP);
   fill(corTextoBotao);
@@ -285,34 +293,20 @@ function desenharTelaInstrucoes() {
   );
   text("3. Evite os obstáculos de cereja e cair das plataformas ", 100, 255);
   text("4. Tente bater seu recorde!", 100, 295);
-
-  // Botão Voltar
-  desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
+  desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80, imgBotaoVoltar);
 }
 
 /**
- * Desenha a Tela de Créditos.
+ * Desenha a tela de Créditos.
  */
 function desenharTelaCreditos() {
-  background(fundo); // ALTERADO: Usa a imagem de fundo 'fundo'
+  background(fundo);
   fill(corTituloPrincipal);
-  
-  // Título: Usa fonteTitulo
-  if (fonteTitulo) {
-    textFont(fonteTitulo);
-  } else {
-    textFont('sans-serif');
-  }
+  if (fonteTitulo) { textFont(fonteTitulo); } else { textFont('sans-serif'); }
   textSize(40);
   textAlign(CENTER, TOP);
   text("CRÉDITOS", width / 2, 50);
-
-  // Corpo do Texto: Usa fonteSubTitulo
-  if (fonteSubTitulo) {
-    textFont(fonteSubTitulo); 
-  } else {
-    textFont('sans-serif');
-  }
+  if (fonteSubTitulo) { textFont(fonteSubTitulo); } else { textFont('sans-serif'); }
   textSize(12);
   textAlign(CENTER, TOP);
   fill(corTextoBotao);
@@ -323,25 +317,47 @@ function desenharTelaCreditos() {
     190
   );
   text("Feito com p5.js", width / 2, 230);
+  desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80, imgBotaoVoltar);
+}
 
-  // Botão Voltar
-  desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
+
+/**
+ * Desenha a tela de Game Over.
+ */
+function desenharTelaGameOver() {
+    background(fundo);
+    
+    // Título/Mensagem de Game Over
+    if (fonteTitulo) { textFont(fonteTitulo); } else { textFont('sans-serif'); }
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    fill(corDestaque);
+    text("GAME OVER!", width / 2, height / 2 - 50);
+    
+    // Mensagem
+    if (fonteSubTitulo) { textFont(fonteSubTitulo); } else { textFont('sans-serif'); }
+    textSize(16);
+    fill(corTextoBotao);
+    text("Você colidiu com a cereja!", width / 2, height / 2 + 10);
+    
+    // Botão Reiniciar
+    desenharBotao("REINICIAR", width / 2 - larguraBotao / 2, height - 80, imgBotaoVoltar);
 }
 
 /**
  * Desenha a Tela de Jogo e executa a lógica de física e colisão.
  */
 function desenharTelaJogo() {
-  background(fundo); // ALTERADO: Usa a imagem de fundo 'fundo'
+  background(fundo);
   fill(corTextoBotao);
   
   // --- 1. FÍSICA E COLISÃO COM O CHÃO ---
   velocidadeY += gravidade;
   pudimY += velocidadeY;
 
-  // Novo Y do Chão (Topo Visual da Grama, onde a física deve parar)
   const CHAO_FISICA_Y = alturaChao + OFFSET_Y_AJUSTE;
-  const PUDIM_CHAO_Y = CHAO_FISICA_Y - alturaHitboxPudim / 2;
+  // A colisão com o chão é ajustada pelo raio para que o centro do pudim pare na altura correta
+  const PUDIM_CHAO_Y = CHAO_FISICA_Y - raioHitboxPudim; 
 
   // Colisão com o chão
   if (pudimY >= PUDIM_CHAO_Y) {
@@ -356,49 +372,11 @@ function desenharTelaJogo() {
   if (keyIsDown(68)) { // Tecla 'D' (Direita)
     pudimX += velocidadeHorizontal;
   }
-  pudimX = constrain(pudimX, larguraHitboxPudim / 2, width - larguraHitboxPudim / 2);
+  // Limita a posição X usando o RAIO do Pudim
+  pudimX = constrain(pudimX, raioHitboxPudim, width - raioHitboxPudim);
 
   // --- 3. LÓGICA DE COLISÃO DO PUDIM COM OBSTÁCULOS ---
-  let pudimEsquerda = pudimX - larguraHitboxPudim / 2;
-  let pudimDireita = pudimX + larguraHitboxPudim / 2;
-  let pudimTopo = pudimY - alturaHitboxPudim / 2;
-  let pudimBase = pudimY + alturaHitboxPudim / 2;
-
-  let w_hit_cereja = larguraHitbox;
-  let h_hit_cereja = alturaHitbox;
-
-  for (let i = 0; i < obstaculos.length; i++) {
-    let obs = obstaculos[i];
-
-    let obsEsquerda = obs.x - w_hit_cereja / 2;
-    let obsDireita = obs.x + w_hit_cereja / 2;
-    let obsTopo = obs.y - h_hit_cereja / 2;
-    let obsBase = obs.y + h_hit_cereja / 2;
-
-    // Colisão AABB (Axis-Aligned Bounding Box)
-    let colisaoX = pudimDireita > obsEsquerda && pudimEsquerda < obsDireita;
-    let colisaoY = pudimBase > obsTopo && pudimTopo < obsBase;
-
-    if (colisaoX && colisaoY) {
-      // Pouso no Topo do Obstáculo (só se estiver caindo)
-      if (pudimBase > obsTopo && pudimBase < obsBase && velocidadeY > 0) {
-        pudimY = obsTopo - alturaHitboxPudim / 2 + 5;
-        velocidadeY = 0;
-      } else {
-        // Colisão Lateral (Bloqueio)
-        let distanciaX = pudimX - obs.x;
-        let sobreposicao = (larguraHitboxPudim / 2) + (w_hit_cereja / 2) - abs(distanciaX);
-
-        if (sobreposicao > 0) {
-          if (distanciaX > 0) { 
-            pudimX += sobreposicao; // Empurra para a direita
-          } else { 
-            pudimX -= sobreposicao; // Empurra para a esquerda
-          }
-        }
-      }
-    }
-  }
+  verificarColisaoObstaculo();
 
   // --- 4. DESENHO DOS ELEMENTOS ---
   imageMode(CENTER);
@@ -427,8 +405,8 @@ function desenharTelaJogo() {
   // Desenho da Plataforma Base
   desenharPlataforma(alturaChao);
 
-  // Botão Voltar
-  desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80);
+  // Botão Voltar 
+  desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80, imgBotaoVoltar);
 }
 
 
@@ -441,16 +419,8 @@ function setup() {
   xInicialBotao = width / 2 - larguraTotalGrupo / 2;
   pudimXMenu = width / 2;
 
-  // Inicialização do Pudim e Posição inicial no topo da grama (Y=340)
-  pudimX = 50;
-  pudimY = alturaChao + OFFSET_Y_AJUSTE - alturaHitboxPudim / 2;
-  velocidadeY = 0;
-
-  // Inicializa obstáculos (Cerejas)
-  let yObsCentro = alturaChao + OFFSET_Y_AJUSTE - alturaObs / 2;
-  let centroX = width / 2;
-  obstaculos.push(new Obstaculo(centroX - 160, yObsCentro, larguraObs, alturaObs));
-  obstaculos.push(new Obstaculo(centroX + 160, yObsCentro, larguraObs, alturaObs));
+  // Inicialização do Pudim e Obstáculos
+  reiniciarJogo();
 }
 
 // ====================================================================
@@ -458,7 +428,7 @@ function setup() {
 // ====================================================================
 
 /**
- * Loop principal do jogo.
+ * Loop principal do jogo. Chamado continuamente pelo p5.js.
  */
 function draw() {
   noStroke();
@@ -471,33 +441,19 @@ function draw() {
     desenharPudimMenu();
 
     // --- TÍTULO PRINCIPAL ---
-    if (fonteTitulo) { 
-        textFont(fonteTitulo);
-    } else {
-        textFont('sans-serif'); 
-    }
-
+    if (fonteTitulo) { textFont(fonteTitulo); } else { textFont('sans-serif'); }
     textSize(50);
     textAlign(CENTER, TOP);
     var deslocamentoContorno = 2;
-
-    // Contorno do Título
     fill(corContornoTitulo);
     text("Pudim Saltitante", width / 2 + deslocamentoContorno, 50);
     text("Pudim Saltitante", width / 2 - deslocamentoContorno, 50);
     text("Pudim Saltitante", width / 2, 50 + deslocamentoContorno);
     text("Pudim Saltitante", width / 2, 50 - deslocamentoContorno);
-
-    // Título Principal
     fill(corTituloPrincipal);
     text("Pudim Saltitante", width / 2, 50);
 
-    // --- SUBTÍTULO ---
-    if (fonteSubTitulo) {
-        textFont(fonteSubTitulo); 
-    } else {
-        textFont('sans-serif');
-    }
+    if (fonteSubTitulo) { textFont(fonteSubTitulo); } else { textFont('sans-serif'); }
     textSize(16);
     fill(corTextoBotao);
     text("Jump flippy pudding", width / 2, 110);
@@ -507,9 +463,9 @@ function draw() {
     var xBotaoInstrucoes = xInicialBotao + larguraBotao + espacamento;
     var xBotaoCreditos = xInicialBotao + 2 * larguraBotao + 2 * espacamento;
 
-    desenharBotao("JOGAR", xBotaoJogar, yBotao);
-    desenharBotao("INSTRUÇÕES", xBotaoInstrucoes, yBotao);
-    desenharBotao("CRÉDITOS", xBotaoCreditos, yBotao);
+    desenharBotao("JOGAR", xBotaoJogar, yBotao, imgBotaoJogar); 
+    desenharBotao("INSTRUÇÕES", xBotaoInstrucoes, yBotao, imgBotaoInstrucoes);
+    desenharBotao("CRÉDITOS", xBotaoCreditos, yBotao, imgBotaoCreditos);
     
     textSize(14);
     fill(corTextoBotao);
@@ -524,27 +480,49 @@ function draw() {
   } else if (tela === 4) {
     // TELA 4: CRÉDITOS
     desenharTelaCreditos();
+  } else if (tela === 5) {
+    // TELA 5: GAME OVER
+    desenharTelaGameOver();
   }
 }
 
 /**
- * Lógica de ação ao clicar com o mouse.
+ * Lógica de ação ao clicar com o mouse, controlando a navegação entre telas.
  */
 function mousePressed() {
-  // Lógica para voltar do menu secundário para o principal
-  if (tela === 2 || tela === 3 || tela === 4) {
-    let xVoltar = width / 2 - larguraBotao / 2;
-    let yVoltar = height - 80;
+  // Posição do botão VOLTAR/REINICIAR
+  let xVoltar = width / 2 - larguraBotao / 2;
+  let yVoltar = height - 80;
 
+  // Lógica para voltar do menu secundário para o principal (Telas 2, 3, 4)
+  if (tela === 2 || tela === 3 || tela === 4) {
     if (
       mouseX >= xVoltar &&
       mouseX <= xVoltar + larguraBotao &&
       mouseY >= yVoltar &&
       mouseY <= yVoltar + alturaBotao
     ) {
+      // Se estava no jogo, reinicia antes de voltar para o menu
+      if (tela === 2) {
+          reiniciarJogo();
+      }
       tela = 1; // Volta para o Menu Principal
       return;
     }
+  }
+  
+  // Lógica para a tela de Game Over (Tela 5)
+  if (tela === 5) {
+      if (
+        mouseX >= xVoltar &&
+        mouseX <= xVoltar + larguraBotao &&
+        mouseY >= yVoltar &&
+        mouseY <= yVoltar + alturaBotao
+      ) {
+          reiniciarJogo(); // Reinicia o jogo
+          tela = 2;        // Vai para a Tela de Jogo
+          return;
+      }
   }
 
   // Lógica para os botões do Menu Principal (Tela 1)
@@ -564,6 +542,7 @@ function mousePressed() {
     }
 
     if (isClicked(xBotaoJogar)) {
+      reiniciarJogo(); // Garante que o jogo esteja resetado ao começar
       tela = 2; // Inicia o Jogo
     } else if (isClicked(xBotaoInstrucoes)) {
       tela = 3; // Abre a tela de Instruções
@@ -580,7 +559,7 @@ function keyPressed() {
   // Apenas aplica pulo se estiver na tela de jogo
   if (tela !== 2) return;
 
-  // Pulo: Tecla ESPAÇO (32). Só permite pulo se estiver no chão (velocidadeY === 0)
+  // Pulo: Tecla ESPAÇO (32). Só permite pulo se estiver no chão
   if (keyCode === 32 && velocidadeY === 0) {
     velocidadeY = forcaPulo; 
   }
