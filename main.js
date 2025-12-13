@@ -397,7 +397,7 @@ function desenharTelaInstrucoes() {
     100,
     190
   );
-  text("3. Evite os obstáculos de cereja e cair das plataformas ", 100, 255);
+  text("3. Evite os obstáculos de cereja", 100, 255);
   text("4. Tente bater seu recorde!", 100, 295);
   desenharBotao("VOLTAR", width / 2 - larguraBotao / 2, height - 80, imgBotaoVoltar);
 }
