@@ -482,9 +482,9 @@ function desenharTelaGameOver() {
     textAlign(CENTER, TOP);
     fill(corTextoBotao);
     text(`SCORE FINAL: ${nf(scoreAtual, 4)}`, width / 2, height / 2 + 10);
-    text(`HI SCORE: ${nf(highScore, 4)}`, width / 2, height / 2 + 35);
+    text(`BEST SCORE: ${nf(highScore, 4)}`, width / 2, height / 2 + 35);
     text(`TEMPO FINAL: ${tempoFormatado}`, width / 2, height / 2 + 60);
-    text(`HI TEMPO: ${highTimeFormatado}`, width / 2, height / 2 + 85); 
+    text(`BEST TEMPO: ${highTimeFormatado}`, width / 2, height / 2 + 85); 
     
     let xBotaoReiniciar = width / 2 - larguraBotao - espacamento / 2;
     let xBotaoSair = width / 2 + espacamento / 2;
